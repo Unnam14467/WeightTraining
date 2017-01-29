@@ -115,9 +115,24 @@ The performance was decent since the 20 questions based on the testing data set,
 
 ```{r model}
 library(randomForest)
-Model <- randomForest(formula,data=New_Training)
-```
+library(caTools)
 
+smp_size <- floor(0.75 * nrow(New_Training))
+train_ind <- sample(seq_len(nrow(New_Training)), size = smp_size)
+train <- New_Training[train_ind, ]
+CV <- New_Training[-train_ind, ]
+
+Model <- randomForest(formula,data=train)
+pred_cv <- predict(Model,newdata=CV)
+table(pred_cv,CV$classe)
+```
+Largely, we are getting the classes right. The accuracy of class prediction is 
+
+```{r model2,echo=FALSE}
+Data <- as.data.frame(table(pred_cv,CV$classe))
+Accuracy <- sum(Data[Data$pred_cv==Data$Var2,"Freq"])/(sum(Data[,"Freq"]))
+Accuracy
+```
 ## Appendix 
 
 The Plot of Different Accelerometer Data across X axix for the five classes. 

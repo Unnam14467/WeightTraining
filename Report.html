@@ -190,7 +190,25 @@ Var_Data &lt;- data.frame(name=col_name,variance_percent=var_col)</code></pre>
 <pre class="r"><code>library(randomForest)</code></pre>
 <pre><code>## randomForest 4.6-12</code></pre>
 <pre><code>## Type rfNews() to see new features/changes/bug fixes.</code></pre>
-<pre class="r"><code>Model &lt;- randomForest(formula,data=New_Training)</code></pre>
+<pre class="r"><code>library(caTools)
+
+smp_size &lt;- floor(0.75 * nrow(New_Training))
+train_ind &lt;- sample(seq_len(nrow(New_Training)), size = smp_size)
+train &lt;- New_Training[train_ind, ]
+CV &lt;- New_Training[-train_ind, ]
+
+Model &lt;- randomForest(formula,data=train)
+pred_cv &lt;- predict(Model,newdata=CV)
+table(pred_cv,CV$classe)</code></pre>
+<pre><code>##        
+## pred_cv    A    B    C    D    E
+##       A 1429   30    8   10    4
+##       B    3  869   18    0   10
+##       C    1   12  823   20    9
+##       D    2    7    7  763   16
+##       E    0   17    4    9  835</code></pre>
+<p>Largely, we are getting the classes right. The accuracy of class prediction is</p>
+<pre><code>## [1] 0.9618834</code></pre>
 </div>
 <div id="appendix" class="section level2">
 <h2>Appendix</h2>
